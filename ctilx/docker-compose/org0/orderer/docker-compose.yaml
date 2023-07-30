@@ -1,0 +1,37 @@
+version: '2'
+
+networks:
+  fabric-ca:
+services:
+  orderer1-org0:
+    container_name: orderer1-org0
+    image: hyperledger/fabric-orderer:2.0.0
+    environment:
+      - ORDERER_HOME=$LXHOME/orderer
+      - ORDERER_HOST=orderer1-org0
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=$LXHOME/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=org0MSP
+      - ORDERER_GENERAL_LOCALMSPDIR=$LXHOME/org0/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=$LXHOME/org0/orderer/tls-msp/keystore/key.pem
+      - ORDERER_GENERAL_TLS_CERTIFICATE=$LXHOME/org0/orderer/tls-msp/signcerts/cert.pem
+      - ORDERER_GENERAL_TLS_ROOTCAS=[$LXHOME/org0/orderer/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
+
+      - ORDERER_KAFKA_TOPIC_REPLICATIONFACTOR=1
+      - ORDERER_KAFKA_VERBOSE=true
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=$LXHOME/org0/orderer/tls-msp/signcerts/cert.pem
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=$LXHOME/org0/orderer/tls-msp/keystore/key.pem
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[$LXHOME/org0/orderer/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem]
+
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs
+    volumes:
+      - $LXHOME/org0/orderer:$LXHOME/org0/orderer/
+      - $LXHOME/configtx/system-genesis-block/genesis.block:$LXHOME/orderer/orderer.genesis.block
+
+    networks:
+      - fabric-ca

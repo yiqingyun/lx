@@ -1,0 +1,35 @@
+version: '2'
+
+networks:
+  fabric-ca:
+services:
+    cli-org1:
+      container_name: cli-org1
+      image: hyperledger/fabric-tools:2.0.0
+      tty: true
+      stdin_open: true
+      environment:
+        - SYS_CHANNEL=testchainid
+        - GOPATH=/opt/gopath
+        - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+        - FABRIC_LOGGING_SPEC=DEBUG
+        - CORE_PEER_ID=cli-org1
+        - CORE_PEER_ADDRESS=peer1-org1:7051
+        - CORE_PEER_LOCALMSPID=org1MSP
+        - CORE_PEER_TLS_ENABLED=true
+        - CORE_PEER_TLS_ROOTCERT_FILE=$LXHOME/org1/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+        - CORE_PEER_TLS_CERT_FILE=$LXHOME/org1/peer1/tls-msp/signcerts/cert.pem
+        - CORE_PEER_TLS_KEY_FILE=$LXHOME/org1/peer1/tls-msp/keystore/key.pem
+        - CORE_PEER_MSPCONFIGPATH=$LXHOME/org1/peer1/msp
+      working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org1
+      command: /bin/bash
+      volumes:
+        - $LXHOME/org1:$LXHOME/org1/
+        - $LXHOME/org2:$LXHOME/org2/
+        - $LXHOME/org1/peer1/assets/chaincode:/opt/gopath/src/github.com/hyperledger/fabric-samples/chaincode
+        - $LXHOME/org1/admin:$LXHOME/org1/admin
+        - $LXHOME/org0/orderer/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem:$LXHOME/org0/orderer/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+        - $LXHOME/org1/peer1/tls-msp/tlscacerts:$LXHOME/org1/admin/msp/tlscacerts
+        - $LXHOME/configtx/channel-artifacts:$LXHOME/configtx/channel-artifacts
+      networks:
+        - fabric-ca
